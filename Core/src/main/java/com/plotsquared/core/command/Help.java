@@ -33,12 +33,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 @CommandDeclaration(command = "help",
-        aliases = "?",
+        aliases = {"ajuda"},
         category = CommandCategory.INFO,
         usage = "help [category | #]",
         permission = "plots.use")
@@ -95,6 +96,40 @@ public class Help extends Command {
     ) {
         return CompletableFuture.supplyAsync(() -> {
             String cat = catRaw;
+
+            if (!player.hasPermission("plots.admin")) {
+                TextComponent.Builder builder = Component.text();
+                builder.append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <yellow><b>AJUDA ➜</b> <green>Terrenos")).append(Component.newline());
+                builder.append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot <dark_gray>- <gray>Ver comandos do plot.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot info <dark_gray>- <gray>Ver informações do plot.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot claim <dark_gray>- <gray>Pegar o plot em que você está.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot auto <dark_gray>- <gray>Pegar um plot aleatório.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot h [numero] <dark_gray>- <gray>Ir até o seu plot.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot add <dark_gray>- <gray>Dê permissão à um jogador " +
+                        "enquanto você estiver online.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot trust <dark_gray>- <gray>Dê permissão definitiva à um " +
+                        "jogador.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot deny <dark_gray>- <gray>Banir jogadores do terreno.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot kick <dark_gray>- <gray>Expulsar jogadores do terreno.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <green>/plot remove <dark_gray>- <gray>Remover trust ou ban " +
+                        "de jogadores.")).append(Component.newline());
+                builder.append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <gold>/plot biome <dark_gray>- <gold>Alterar o bioma do plot. " +
+                        "<b><gradient:#fb00df:#e6fd00>VIP DRAGON</gradient></b>")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <gold>/plot music <dark_gray>- <gold>Coloque música no terreno. " +
+                        "<b><gradient:#fb00df:#e6fd00>VIP DRAGON</gradient></b>")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <gold>/plot merge <dark_gray>- <gold>Juntar seus plots próximos. " +
+                        "<b><gradient:#006DFB:#00CAFD>VIP ESPECIAL</gradient></b>")).append(Component.newline());
+                builder.append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <red>/plot leave <dark_gray>- <red>Tirar seu trust de um terreno.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <red>/plot unlink <dark_gray>- <red>Remover o merge do plot.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <red>/plot clear <dark_gray>- <red>Limpar (resetar) o seu plot.")).append(Component.newline());
+                builder.append(MINI_MESSAGE.deserialize(" <red>/plot delete <dark_gray>- <red>Resetar e abandonar o seu plot.")).append(Component.newline());
+                player.sendMessage(StaticCaption.of(MINI_MESSAGE.serialize(builder.asComponent())));
+                return true;
+            }
 
             CommandCategory catEnum = null;
             if (cat != null) {
@@ -160,6 +195,7 @@ public class Help extends Command {
 
     @Override
     public Collection<Command> tab(PlotPlayer<?> player, String[] args, boolean space) {
+        if (!player.hasPermission("plots.admin")) return Collections.emptyList();
         final String argument = args[0].toLowerCase(Locale.ENGLISH);
         List<Command> result = new ArrayList<>();
 
